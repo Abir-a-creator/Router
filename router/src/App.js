@@ -1,43 +1,53 @@
-import React,{ useState}  from "react"
+import React, { useState } from 'react'
+import DataCard from './components/MovieCard'
+import MovieList from './components/MovieList';
+import Search from './components/Search';
+import Trailer from './components/Trailer'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
-import AddMovie from "./Component/AddMovie";
-import Moviecard from "./Component/Moviecard";
-import {moviesData} from "./Component/MovieData"
-import MovieList from "./Component/MovieList";
-import {BrowserRouter  as Router , Route, Switch} from 'react-router-dom';
 
-import Navbar from "./navBar/Navbar"
-import Info from "./Component/Info"
+const App = () => {
 
-function App() {
+  const [film, setFilm] = useState(DataCard)
 
-  const [movie , setMovie] =  useState(moviesData) ;
-  const [name , setName] =  useState("") ;
-  const [ratingSearch , setRatingsearch] = useState("");
 
-  const addMv = (e , newmovie)=> {
-    e.preventDefault() ;
-    return setMovie([...movie, newmovie]) 
+  const [array, setArray] = useState([])
+
+  const addMovie = (x) => {
+    return setFilm([...film, x])
   }
-  return (
-    <div className="App">
-      <header className="App-header">
-      <Router>
-   
 
-      <Route exact path ='/' render ={()=>
-      <Navbar setName={setName} setRatingsearch={setRatingsearch} ratingSearch={ratingSearch} />} />
-       <Route exact path ='/' render ={()=>
-       <MovieList movie={movie} setMovie={setMovie}  name={name} setName={setName} setRatingsearch={setRatingsearch} ratingSearch={ratingSearch} />} />
-      <Route exact path ='/' render ={()=>
-       <AddMovie addMv={addMv}/> } />
-       
-         <Route path ='/info/:id' render ={()=><Info movie={movie} setMovie={setMovie} />} />
-         
-       </Router>
-      </header>
-    </div>
-  );
+  const searchMovie = (search) => {
+    const test = film.filter((x) => x.title.toLowerCase().includes(search))
+    return setArray(test)
+  }
+
+  const searchRating = (rating) => {
+    const test = film.filter((x) => x.rate >= rating)
+    return setArray(test)
+  }
+
+  return (
+    <React.Fragment>
+      <Search searchMovie={searchMovie} searchRating={searchRating} />
+      <Router>
+        <Switch>
+          <Route exact path='/'>
+            <div>
+              <MovieList film={film} movie={array} addMovie={addMovie} />
+            </div>
+          </Route>
+          <Route exact path='/Trailer/:id' render={(props)=>
+          
+            <Trailer arr={film} {...props} />
+          }>
+          </Route>
+        </Switch>
+      
+      </Router>
+
+    </React.Fragment>
+  )
 }
 
 export default App;
